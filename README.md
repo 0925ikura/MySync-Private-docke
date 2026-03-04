@@ -38,11 +38,17 @@
 ### 服务器端（一键安装）
 
 ```bash
+# 方式一：一键安装脚本（推荐）
+wget https://raw.githubusercontent.com/YOUR_USERNAME/browser-sync/main/server/quick-install.sh
+chmod +x quick-install.sh
+sudo bash quick-install.sh
+
+# 方式二：手动安装
 # 1. 克隆项目
 git clone https://github.com/YOUR_USERNAME/browser-sync.git
 cd browser-sync/server
 
-# 2. 运行一键安装脚本
+# 2. 运行安装脚本
 chmod +x scripts/install.sh
 sudo bash scripts/install.sh
 
