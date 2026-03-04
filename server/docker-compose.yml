@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  sync-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: browser-sync-server
+    ports:
+      - "${PORT:-8080}:${PORT:-8080}"
+      - "${WSS_PORT:-8443}:${WSS_PORT:-8443}"
+    environment:
+      - PORT=${PORT:-8080}
+      - WSS_PORT=${WSS_PORT:-8443}
+      - DOMAIN=${DOMAIN:-localhost}
+      - NODE_ENV=production
+      - SSL_ENABLED=${SSL_ENABLED:-true}
+      - SSL_CERT_PATH=/app/certs/cert.pem
+      - SSL_KEY_PATH=/app/certs/key.pem
+    volumes:
+      - ./data:/app/data
+      - ./certs:/app/certs:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - sync-network
+
+  # Nginx 反向代理（可选，用于生产环境）
+  nginx:
+    image: nginx:alpine
+    container_name: browser-sync-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/app/certs:ro
+    depends_on:
+      - sync-server
+    restart: unless-stopped
+    networks:
+      - sync-network
+    profiles:
+      - with-nginx
+
+networks:
+  sync-network:
+    driver: bridge

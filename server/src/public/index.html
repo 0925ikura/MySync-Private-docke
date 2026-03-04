@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>浏览器数据同步 - 管理面板</title>
+  <link rel="icon" href="icons/favicon.png" type="image/png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <nav class="sidebar">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <path d="M12 8v4l3 3"/>
+        </svg>
+        <span>数据同步管理</span>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item active" data-page="dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          <span>仪表盘</span>
+        </li>
+        <li class="nav-item" data-page="bookmarks">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+          </svg>
+          <span>书签</span>
+        </li>
+        <li class="nav-item" data-page="history">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span>历史记录</span>
+        </li>
+        <li class="nav-item" data-page="cookies">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 12l8 0"/>
+          </svg>
+          <span>Cookie</span>
+        </li>
+        <li class="nav-item" data-page="clients">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+            <path d="M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+          <span>客户端</span>
+        </li>
+        <li class="nav-item" data-page="settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+          <span>设置</span>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="content">
+      <header class="header">
+        <h1 id="page-title">仪表盘</h1>
+        <div class="connection-status" id="connection-status">
+          <span class="status-dot"></span>
+          <span class="status-text">连接中...</span>
+        </div>
+      </header>
+
+      <div class="page active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon bookmark">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="dash-bookmarks">0</span>
+              <span class="stat-label">书签</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon history">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="dash-history">0</span>
+              <span class="stat-label">历史记录</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon cookies">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 12l8 0"/>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="dash-cookies">0</span>
+              <span class="stat-label">Cookie</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon clients">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="dash-clients">0</span>
+              <span class="stat-label">在线客户端</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="server-info">
+          <h2>服务器信息</h2>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">状态</span>
+              <span class="info-value" id="server-status">运行中</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">端口</span>
+              <span class="info-value" id="server-port">8080</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">WebSocket</span>
+              <span class="info-value" id="ws-status">未连接</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-bookmarks">
+        <div class="page-header">
+          <input type="text" class="search-input" id="bookmarks-search" placeholder="搜索书签...">
+          <button class="btn" id="bookmarks-dedup">去重</button>
+          <button class="btn" id="bookmarks-export">导出</button>
+          <button class="btn btn-danger" id="bookmarks-delete-all">全部删除</button>
+        </div>
+        <div class="data-list" id="bookmarks-list"></div>
+      </div>
+
+      <div class="page" id="page-history">
+        <div class="page-header">
+          <input type="text" class="search-input" id="history-search" placeholder="搜索历史记录...">
+          <button class="btn" id="history-dedup">去重</button>
+          <button class="btn" id="history-export">导出</button>
+          <button class="btn btn-danger" id="history-delete-all">全部删除</button>
+        </div>
+        <div class="data-list" id="history-list"></div>
+      </div>
+
+      <div class="page" id="page-cookies">
+        <div class="page-header">
+          <input type="text" class="search-input" id="cookies-search" placeholder="搜索 Cookie...">
+          <button class="btn" id="cookies-dedup">去重</button>
+          <button class="btn" id="cookies-export">导出</button>
+          <button class="btn btn-danger" id="cookies-delete-all">全部删除</button>
+        </div>
+        <div class="data-list" id="cookies-list"></div>
+      </div>
+
+      <div class="page" id="page-clients">
+        <div class="clients-list" id="clients-list"></div>
+      </div>
+
+      <div class="page" id="page-settings">
+        <div class="settings-container">
+          <h2>修改用户名</h2>
+          <form id="change-username-form">
+            <div class="form-group">
+              <label for="current-username-display">当前用户名</label>
+              <input type="text" id="current-username-display" disabled style="background: #f5f5f5;">
+            </div>
+            <div class="form-group">
+              <label for="new-username">新用户名</label>
+              <input type="text" id="new-username" required placeholder="请输入新用户名" minlength="3">
+            </div>
+            <button type="submit" class="btn btn-primary">修改用户名</button>
+          </form>
+        </div>
+        
+        <div class="settings-container" style="margin-top: 30px;">
+          <h2>修改密码</h2>
+          <form id="change-password-form">
+            <div class="form-group">
+              <label for="old-password">当前密码</label>
+              <input type="password" id="old-password" required placeholder="请输入当前密码">
+            </div>
+            <div class="form-group">
+              <label for="new-password">新密码</label>
+              <input type="password" id="new-password" required placeholder="请输入新密码" minlength="6">
+            </div>
+            <div class="form-group">
+              <label for="confirm-password">确认新密码</label>
+              <input type="password" id="confirm-password" required placeholder="请再次输入新密码" minlength="6">
+            </div>
+            <button type="submit" class="btn btn-primary">修改密码</button>
+          </form>
+        </div>
+        
+        <div class="settings-container" style="margin-top: 30px;">
+          <h2>登录信息</h2>
+          <div class="user-info">
+            <p>当前用户：<strong id="current-username">-</strong></p>
+            <button class="btn btn-danger" id="logout-btn">退出登录</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

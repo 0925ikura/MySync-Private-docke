@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据同步</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <path d="M12 8v4l3 3"/>
+        </svg>
+        <span>浏览器数据同步</span>
+      </div>
+      <div class="status" id="status">
+        <span class="status-dot"></span>
+        <span class="status-text">连接中...</span>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="bookmarks">书签</button>
+      <button class="tab-btn" data-tab="history">历史记录</button>
+      <button class="tab-btn" data-tab="cookies">Cookie</button>
+    </div>
+
+    <div class="tab-content">
+      <div class="tab-panel active" id="bookmarks-panel">
+        <div class="panel-header">
+          <h3>书签同步</h3>
+          <button class="sync-btn" id="sync-bookmarks">同步</button>
+        </div>
+        <div class="stats">
+          <div class="stat-item">
+            <span class="stat-value" id="bookmarks-count">0</span>
+            <span class="stat-label">总书签数</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="bookmarks-synced">0</span>
+            <span class="stat-label">已同步</span>
+          </div>
+        </div>
+        <div class="recent-list" id="bookmarks-list">
+          <div class="empty-state">暂无同步数据</div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="history-panel">
+        <div class="panel-header">
+          <h3>历史记录</h3>
+          <button class="sync-btn" id="sync-history">同步</button>
+        </div>
+        <div class="stats">
+          <div class="stat-item">
+            <span class="stat-value" id="history-count">0</span>
+            <span class="stat-label">历史记录数</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="history-synced">0</span>
+            <span class="stat-label">已同步</span>
+          </div>
+        </div>
+        <div class="recent-list" id="history-list">
+          <div class="empty-state">暂无同步数据</div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="cookies-panel">
+        <div class="panel-header">
+          <h3>Cookie 同步</h3>
+          <button class="sync-btn" id="sync-cookies">同步</button>
+        </div>
+        <div class="stats">
+          <div class="stat-item">
+            <span class="stat-value" id="cookies-count">0</span>
+            <span class="stat-label">Cookie数量</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="cookies-synced">0</span>
+            <span class="stat-label">已同步</span>
+          </div>
+        </div>
+        <div class="recent-list" id="cookies-list">
+          <div class="empty-state">暂无同步数据</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <a href="#" id="settings-link">设置</a>
+      <span class="divider">|</span>
+      <span id="server-url">ws://localhost:8080</span>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
