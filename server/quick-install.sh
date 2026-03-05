@@ -6,11 +6,17 @@
 set -e
 
 # 配置变量（可根据需要修改）
-REPO_URL="${REPO_URL:-https://github.com/YOUR_USERNAME/browser-sync.git}"
+REPO_URL="${REPO_URL:-https://github.com/0925ikura/MySync-Private-docke.git}"
 INSTALL_DIR="/opt/browser-sync"
 DOMAIN="${DOMAIN:-localhost}"
-PORT="${PORT:-8080}"
-WSS_PORT="${WSS_PORT:-8443}"
+
+# 随机生成端口（如果未指定）
+generate_random_port() {
+    echo $((RANDOM % 10000 + 10000))
+}
+
+PORT="${PORT:-$(generate_random_port)}"
+WSS_PORT="${WSS_PORT:-$(generate_random_port)}"
 EMAIL="${EMAIL:-admin@localhost}"
 
 echo "========================================="

@@ -60,12 +60,12 @@ bash scripts/setup-ssl.sh letsencrypt
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/YOUR_USERNAME/browser-sync.git
+git clone https://github.com/0925ikura/MySync-Private-docke.git
 cd browser-sync/server
 
-# 2. 配置环境变量
-cp .env.example .env
-vim .env
+# 2. 配置环境变量（可选）
+# 端口会自动随机生成，也可以手动指定
+# export PORT=8080 WSS_PORT=8443
 
 # 3. 生成 SSL 证书
 bash scripts/deploy-docker.sh
@@ -73,6 +73,8 @@ bash scripts/deploy-docker.sh
 # 4. 启动服务
 docker-compose up -d
 ```
+
+**端口说明：** HTTP 和 WSS 端口会自动随机生成（10000-20000 范围），避免端口冲突。
 
 ### 浏览器扩展
 

@@ -34,6 +34,8 @@ chmod +x quick-install.sh
 sudo bash quick-install.sh
 ```
 
+**说明：** 端口会自动随机生成（10000-20000 范围），避免端口冲突。
+
 ---
 
 ## ⚙️ 可选配置
