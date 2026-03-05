@@ -18,19 +18,24 @@
 
 ```
 .
-├── extension/          # 浏览器扩展
-│   ├── background/     # 后台脚本
-│   ├── popup/          # 弹出页面
-│   ├── options/        # 选项页面
-│   ├── icons/          # 图标
-│   └── manifest.json   # 扩展配置
-├── server/             # 服务器端
-│   ├── src/            # 源代码
-│   ├── scripts/        # 部署脚本
-│   ├── nginx/          # Nginx 配置
-│   ├── Dockerfile      # Docker 镜像
+├── extension/              # 浏览器扩展
+│   ├── background/         # 后台脚本
+│   ├── popup/              # 弹出页面
+│   ├── options/            # 选项页面
+│   ├── icons/              # 图标
+│   └── manifest.json       # 扩展配置
+├── server/                 # 服务器端
+│   ├── src/                # 源代码
+│   │   ├── public/         # 静态文件
+│   │   ├── auth.js         # 认证模块
+│   │   └── index.js        # 主服务器
+│   ├── scripts/            # 部署脚本
+│   ├── nginx/              # Nginx 配置
+│   ├── Dockerfile          # Docker 镜像
 │   └── docker-compose.yml
-└── docs/               # 文档
+├── docs/                   # 文档（待创建）
+├── README.md               # 项目说明
+└── SERVER_INSTALL.md       # 服务器安装指南
 ```
 
 ## 🔧 快速开始
@@ -46,7 +51,7 @@ sudo bash quick-install.sh
 # 方式二：手动安装
 # 1. 克隆项目
 git clone https://github.com/0925ikura/MySync-Private-docke.git
-cd browser-sync/server
+cd MySync-Private-docke/server
 
 # 2. 运行安装脚本
 chmod +x scripts/install.sh
@@ -61,7 +66,7 @@ bash scripts/setup-ssl.sh letsencrypt
 ```bash
 # 1. 克隆项目
 git clone https://github.com/0925ikura/MySync-Private-docke.git
-cd browser-sync/server
+cd MySync-Private-docke/server
 
 # 2. 配置环境变量（可选）
 # 端口会自动随机生成，也可以手动指定
@@ -86,9 +91,10 @@ docker-compose up -d
 
 ## 📖 文档
 
-- [部署指南](server/DEPLOYMENT.md)
-- [使用指南](docs/USAGE.md)
-- [API 文档](docs/API.md)
+- [服务器安装指南](SERVER_INSTALL.md) - 一键安装说明
+- [部署指南](server/DEPLOYMENT.md) - 完整部署文档
+- [快速开始](server/QUICK_START.md) - 快速开始指南
+- [认证系统说明](server/AUTH_GUIDE.md) - 用户认证使用指南
 
 ## 🔒 安全特性
 
@@ -123,6 +129,7 @@ docker-compose up -d
 
 ```bash
 # 服务器配置
+# 端口会自动随机生成（10000-20000），也可以手动指定
 PORT=8080
 WSS_PORT=8443
 DOMAIN=your-domain.com
@@ -136,6 +143,8 @@ SSL_KEY_PATH=/app/certs/key.pem
 NODE_ENV=production
 ```
 
+**注意：** 使用 Docker 部署时，如果不指定端口，系统会自动生成随机端口。
+
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
@@ -148,8 +157,8 @@ MIT License
 
 如有问题，请通过以下方式联系：
 
-- GitHub Issues
-- Email: your-email@example.com
+- GitHub Issues: https://github.com/0925ikura/MySync-Private-docke/issues
+- Email: 通过 GitHub 联系
 
 ---
 
