@@ -77,9 +77,13 @@ bash scripts/deploy-docker.sh
 
 # 4. 启动服务
 docker-compose up -d
+# 或（新版 Docker）
+docker compose up -d
 ```
 
 **端口说明：** HTTP 和 WSS 端口会自动随机生成（10000-20000 范围），避免端口冲突。
+
+**注意：** 脚本会自动检测 Docker Compose 命令（支持 `docker-compose` 和 `docker compose`）。
 
 ### 浏览器扩展
 
@@ -95,6 +99,7 @@ docker-compose up -d
 - [部署指南](server/DEPLOYMENT.md) - 完整部署文档
 - [快速开始](server/QUICK_START.md) - 快速开始指南
 - [认证系统说明](server/AUTH_GUIDE.md) - 用户认证使用指南
+- [故障排除](server/TROUBLESHOOTING.md) - 常见问题和解决方案
 
 ## 🔒 安全特性
 
