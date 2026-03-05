@@ -13,6 +13,41 @@ generate_random_port() {
     echo $((RANDOM % 10000 + 10000))
 }
 
+# 检测 docker compose 命令
+detect_docker_compose() {
+    if command -v docker-compose &> /dev/null; then
+        echo "docker-compose"
+    elif docker compose version &> /dev/null; then
+        echo "docker compose"
+    else
+        echo ""
+    fi
+}
+
+# 检查 Docker
+if ! command -v docker &> /dev/null; then
+    echo "❌ 错误：Docker 未安装"
+    echo ""
+    echo "请先安装 Docker："
+    echo "  curl -fsSL https://get.docker.com | sh"
+    exit 1
+fi
+
+# 检测 docker compose 命令
+DOCKER_COMPOSE_CMD=$(detect_docker_compose)
+if [ -z "$DOCKER_COMPOSE_CMD" ]; then
+    echo "❌ 错误：Docker Compose 未安装"
+    echo ""
+    echo "请安装 Docker Compose："
+    echo "  方式 1：使用 Docker Desktop（推荐）"
+    echo "  方式 2：sudo apt install docker-compose"
+    echo "  方式 3：curl -L \"https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)\" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose"
+    exit 1
+fi
+
+echo "✅ 使用 Docker Compose 命令：$DOCKER_COMPOSE_CMD"
+echo ""
+
 # 检查 .env 文件是否存在
 if [ ! -f ".env" ]; then
     echo "========================================="
@@ -57,7 +92,7 @@ fi
 
 # 启动 Docker Compose
 echo "🚀 启动服务..."
-docker-compose up -d
+$DOCKER_COMPOSE_CMD up -d
 
 # 等待服务启动
 sleep 3
@@ -85,8 +120,8 @@ else
 fi
 echo ""
 echo "🔧 管理命令："
-echo "  查看状态：docker-compose ps"
-echo "  查看日志：docker-compose logs -f"
-echo "  停止服务：docker-compose down"
-echo "  重启服务：docker-compose restart"
+echo "  查看状态：$DOCKER_COMPOSE_CMD ps"
+echo "  查看日志：$DOCKER_COMPOSE_CMD logs -f"
+echo "  停止服务：$DOCKER_COMPOSE_CMD down"
+echo "  重启服务：$DOCKER_COMPOSE_CMD restart"
 echo ""
