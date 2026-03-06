@@ -1,0 +1,6 @@
+# 排除用户数据文件
+src/auth.json
+data/
+.env
+*.log
+node_modules/

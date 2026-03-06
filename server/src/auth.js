@@ -2,7 +2,8 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
-const AUTH_FILE = path.join(__dirname, 'auth.json');
+const DATA_DIR = path.join(__dirname, '..', 'data');
+const AUTH_FILE = path.join(DATA_DIR, 'auth.json');
 
 let users = {};
 
@@ -11,7 +12,7 @@ function loadUsers() {
     if (fs.existsSync(AUTH_FILE)) {
       const data = fs.readFileSync(AUTH_FILE, 'utf8');
       users = JSON.parse(data);
-      console.log(`[Auth] Loaded ${Object.keys(users).length} user(s)`);
+      console.log(`[Auth] Loaded ${Object.keys(users).length} user(s) from ${AUTH_FILE}`);
     }
   } catch (e) {
     console.error('[Auth] Failed to load users:', e);
