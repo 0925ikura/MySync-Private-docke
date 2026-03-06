@@ -3,8 +3,13 @@
 # SSL 证书生成脚本
 # 用于生成自签名证书（测试环境）或 Let's Encrypt 证书（生产环境）
 
-CERT_DIR="/opt/browser-sync/certs"
 DOMAIN="${DOMAIN:-localhost}"
+
+if [ "$EUID" -eq 0 ]; then
+    CERT_DIR="/opt/browser-sync/certs"
+else
+    CERT_DIR="$HOME/browser-sync/certs"
+fi
 
 echo "========================================="
 echo "  SSL 证书配置脚本"

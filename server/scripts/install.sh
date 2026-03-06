@@ -5,11 +5,16 @@
 
 set -e
 
-INSTALL_DIR="/opt/browser-sync"
 SERVICE_NAME="browser-sync"
 PORT="${PORT:-8080}"
 WSS_PORT="${WSS_PORT:-8443}"
 DOMAIN="${DOMAIN:-localhost}"
+
+if [ "$EUID" -eq 0 ]; then
+    INSTALL_DIR="/opt/browser-sync"
+else
+    INSTALL_DIR="$HOME/browser-sync"
+fi
 
 echo "========================================="
 echo "  浏览器数据同步服务 - 安装脚本"
@@ -18,8 +23,9 @@ echo ""
 
 # 检查是否以 root 运行
 if [ "$EUID" -ne 0 ]; then 
-    echo "请使用 sudo 运行此脚本"
-    exit 1
+    echo "注意：不使用 sudo，将在用户主目录下安装"
+    echo "安装目录：$INSTALL_DIR"
+    echo ""
 fi
 
 # 创建安装目录
