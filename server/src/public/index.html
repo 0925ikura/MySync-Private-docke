@@ -47,6 +47,13 @@
           </svg>
           <span>Cookie</span>
         </li>
+        <li class="nav-item" data-page="localStorage">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <span>LocalStorage</span>
+        </li>
         <li class="nav-item" data-page="clients">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
@@ -113,6 +120,18 @@
             </div>
           </div>
           <div class="stat-card">
+            <div class="stat-icon localStorage">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="dash-localStorage">0</span>
+              <span class="stat-label">LocalStorage</span>
+            </div>
+          </div>
+          <div class="stat-card">
             <div class="stat-icon clients">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
@@ -173,6 +192,15 @@
           <button class="btn btn-danger" id="cookies-delete-all">全部删除</button>
         </div>
         <div class="data-list" id="cookies-list"></div>
+      </div>
+
+      <div class="page" id="page-localStorage">
+        <div class="page-header">
+          <input type="text" class="search-input" id="localStorage-search" placeholder="搜索 LocalStorage...">
+          <button class="btn" id="localStorage-export">导出</button>
+          <button class="btn btn-danger" id="localStorage-delete-all">全部删除</button>
+        </div>
+        <div class="data-list" id="localStorage-list"></div>
       </div>
 
       <div class="page" id="page-clients">

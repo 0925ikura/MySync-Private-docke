@@ -4,6 +4,7 @@ let currentData = {
   bookmarks: [],
   history: [],
   cookies: [],
+  localStorage: {},
   clients: []
 };
 
@@ -82,6 +83,7 @@ function setupNavigation() {
         bookmarks: '书签管理',
         history: '历史记录',
         cookies: 'Cookie 管理',
+        localStorage: 'LocalStorage 管理',
         clients: '客户端',
         settings: '设置'
       };
@@ -90,6 +92,7 @@ function setupNavigation() {
       if (pageName === 'bookmarks') renderBookmarks();
       else if (pageName === 'history') renderHistory();
       else if (pageName === 'cookies') renderCookies();
+      else if (pageName === 'localStorage') renderLocalStorage();
       else if (pageName === 'clients') renderClients();
     });
   });
@@ -131,6 +134,18 @@ function setupSearch() {
   document.getElementById('cookies-export').addEventListener('click', () => {
     exportData('cookies', 'cookies-export.json');
   });
+  
+  if (document.getElementById('localStorage-search')) {
+    document.getElementById('localStorage-search').addEventListener('input', (e) => {
+      renderLocalStorage(e.target.value);
+    });
+  }
+  
+  if (document.getElementById('localStorage-export')) {
+    document.getElementById('localStorage-export').addEventListener('click', () => {
+      exportData('localStorage', 'localStorage-export.json');
+    });
+  }
 }
 
 function setupDeleteAll() {
@@ -151,6 +166,14 @@ function setupDeleteAll() {
       deleteAllData('cookies');
     }
   });
+  
+  if (document.getElementById('localStorage-delete-all')) {
+    document.getElementById('localStorage-delete-all').addEventListener('click', () => {
+      if (confirm('确定要删除所有 LocalStorage 数据吗？')) {
+        deleteAllData('localStorage');
+      }
+    });
+  }
 }
 
 async function loadInitialData() {
@@ -165,6 +188,9 @@ async function loadInitialData() {
     document.getElementById('dash-bookmarks').textContent = status.data.bookmarks;
     document.getElementById('dash-history').textContent = status.data.history;
     document.getElementById('dash-cookies').textContent = status.data.cookies;
+    if (document.getElementById('dash-localStorage')) {
+      document.getElementById('dash-localStorage').textContent = status.data.localStorage;
+    }
     document.getElementById('dash-clients').textContent = status.clients;
   } catch (e) {
     console.error('Failed to load status:', e);
@@ -211,6 +237,7 @@ function handleWebSocketMessage(message) {
         currentData.bookmarks = message.data.bookmarks || [];
         currentData.history = message.data.history || [];
         currentData.cookies = message.data.cookies || [];
+        currentData.localStorage = message.data.localStorage || {};
         updateDashboard();
         // 如果当前在某个页面，立即渲染
         if (document.getElementById('page-bookmarks').classList.contains('active')) {
@@ -221,6 +248,9 @@ function handleWebSocketMessage(message) {
         }
         if (document.getElementById('page-cookies').classList.contains('active')) {
           renderCookies();
+        }
+        if (document.getElementById('page-localStorage').classList.contains('active')) {
+          renderLocalStorage();
         }
       }
       break;
@@ -241,6 +271,11 @@ function handleWebSocketMessage(message) {
     case 'cookie_changed':
     case 'sync_cookies':
       fetchAndRender('cookies');
+      break;
+      
+    case 'sync_localStorage':
+    case 'localStorage_changed':
+      fetchAndRender('localStorage');
       break;
       
     case 'bookmarks_deduplicated':
@@ -279,6 +314,8 @@ async function fetchAndRender(type) {
       renderHistory();
     } else if (type === 'cookies' && document.getElementById('page-cookies').classList.contains('active')) {
       renderCookies();
+    } else if (type === 'localStorage' && document.getElementById('page-localStorage').classList.contains('active')) {
+      renderLocalStorage();
     }
     
     updateDashboard();
@@ -291,6 +328,9 @@ function updateDashboard() {
   document.getElementById('dash-bookmarks').textContent = currentData.bookmarks.length;
   document.getElementById('dash-history').textContent = currentData.history.length;
   document.getElementById('dash-cookies').textContent = currentData.cookies.length;
+  if (document.getElementById('dash-localStorage')) {
+    document.getElementById('dash-localStorage').textContent = Object.keys(currentData.localStorage).length;
+  }
 }
 
 function updateConnectionStatus(connected) {
@@ -479,6 +519,46 @@ function renderClients() {
   `).join('');
 }
 
+function renderLocalStorage(filter = '') {
+  const container = document.getElementById('localStorage-list');
+  const localStorageData = currentData.localStorage;
+  const keys = Object.keys(localStorageData);
+  
+  const filteredKeys = keys.filter(key => 
+    !filter || key.toLowerCase().includes(filter.toLowerCase())
+  );
+  
+  if (filteredKeys.length === 0) {
+    container.innerHTML = '<div class="empty-state">暂无数据</div>';
+    return;
+  }
+  
+  container.innerHTML = filteredKeys.map(key => {
+    const value = localStorageData[key];
+    const valuePreview = typeof value === 'string' && value.length > 100 
+      ? value.substring(0, 100) + '...' 
+      : value;
+    
+    return `
+      <div class="data-item">
+        <div class="data-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        <div class="data-content">
+          <div class="data-title">${escapeHtml(key)}</div>
+          <div class="data-url">${escapeHtml(valuePreview)}</div>
+        </div>
+        <div class="data-actions">
+          <button class="btn btn-small btn-delete" onclick="deleteLocalStorageItem('${escapeHtml(key)}')">删除</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
 async function deduplicate(type) {
   try {
     const response = await fetch(`${API_BASE}/api/deduplicate?type=${type}`, {
@@ -517,6 +597,9 @@ async function deleteAllData(type) {
       } else if (type === 'cookies') {
         currentData.cookies = [];
         renderCookies();
+      } else if (type === 'localStorage') {
+        currentData.localStorage = {};
+        renderLocalStorage();
       }
       updateDashboard();
     }
@@ -719,6 +802,21 @@ async function deleteBookmark(id) {
 }
 window.deleteBookmark = deleteBookmark;
 
+async function deleteLocalStorageItem(key) {
+  if (confirm(`确定要删除 localStorage 中的 "${key}" 吗？`)) {
+    try {
+      // 这里需要调用服务器 API 来删除
+      // 暂时先更新本地数据
+      delete currentData.localStorage[key];
+      renderLocalStorage();
+      updateDashboard();
+    } catch (e) {
+      console.error('Failed to delete localStorage item:', e);
+    }
+  }
+}
+window.deleteLocalStorageItem = deleteLocalStorageItem;
+
 function exportData(type, filename) {
   let dataToExport = currentData[type];
   
@@ -748,5 +846,13 @@ function exportData(type, filename) {
   link.download = filename;
   link.click();
   URL.revokeObjectURL(url);
-  alert(`已导出 ${dataToExport.length} 条数据到 ${filename}`);
+  
+  let count = 0;
+  if (type === 'localStorage') {
+    count = Object.keys(dataToExport).length;
+  } else {
+    count = dataToExport.length;
+  }
+  
+  alert(`已导出 ${count} 条数据到 ${filename}`);
 }

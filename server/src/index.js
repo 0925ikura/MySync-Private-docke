@@ -17,7 +17,8 @@ const clients = new Map();
 const dataStore = {
   bookmarks: [],
   history: [],
-  cookies: []
+  cookies: [],
+  localStorage: {}
 };
 
 initialCredentials = auth.initializeAdminUser();
@@ -133,7 +134,8 @@ app.get('/api/status', authMiddleware, (req, res) => {
     data: {
       bookmarks: dataStore.bookmarks.length,
       history: dataStore.history.length,
-      cookies: dataStore.cookies.length
+      cookies: dataStore.cookies.length,
+      localStorage: Object.keys(dataStore.localStorage).length
     }
   });
 });
@@ -151,16 +153,25 @@ app.get('/api/cookies', authMiddleware, (req, res) => {
   res.json(dataStore.cookies);
 });
 
+app.get('/api/localStorage', authMiddleware, (req, res) => {
+  res.json(dataStore.localStorage);
+});
+
 app.delete('/api/data', authMiddleware, (req, res) => {
   const { type } = req.query;
   if (type && dataStore[type]) {
-    dataStore[type] = [];
+    if (type === 'localStorage') {
+      dataStore[type] = {};
+    } else {
+      dataStore[type] = [];
+    }
     broadcast({ type: 'data_cleared', dataType: type });
     res.json({ success: true, message: `${type} data cleared` });
   } else {
     dataStore.bookmarks = [];
     dataStore.history = [];
     dataStore.cookies = [];
+    dataStore.localStorage = {};
     broadcast({ type: 'all_data_cleared' });
     res.json({ success: true, message: 'All data cleared' });
   }
@@ -423,6 +434,27 @@ function handleMessage(clientId, data) {
         dataStore.cookies.push({ ...data.data.cookie, syncedAt: new Date().toISOString() });
       }
       broadcast({ type: 'cookie_changed', data: data.data }, clientId);
+      break;
+      
+    case 'sync_localStorage':
+      if (data.data) {
+        dataStore.localStorage = data.data;
+        broadcast({ type: 'sync_localStorage', data: data.data }, clientId);
+      }
+      break;
+      
+    case 'localStorage_changed':
+      if (data.data.key === null) {
+        // 清空所有 localStorage
+        dataStore.localStorage = {};
+      } else if (data.data.newValue === null) {
+        // 删除单个键
+        delete dataStore.localStorage[data.data.key];
+      } else {
+        // 更新或添加键值对
+        dataStore.localStorage[data.data.key] = data.data.newValue;
+      }
+      broadcast({ type: 'localStorage_changed', data: data.data }, clientId);
       break;
       
     default:

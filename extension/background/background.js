@@ -106,6 +106,9 @@ function handleServerMessage(message) {
     case 'sync_cookies':
       handleCookiesSync(message.data);
       break;
+    case 'sync_localStorage':
+      handleLocalStorageSync(message.data);
+      break;
     default:
       console.log('[Sync] Unknown message type:', message.type);
   }
@@ -135,6 +138,18 @@ async function syncAllData() {
   } catch (e) {
     console.error('[Sync] Failed to get cookies:', e);
   }
+
+  try {
+    const localStorageData = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      localStorageData[key] = localStorage.getItem(key);
+    }
+    console.log('[Sync] Syncing localStorage:', Object.keys(localStorageData).length, 'items');
+    send({ type: 'sync_localStorage', data: localStorageData });
+  } catch (e) {
+    console.error('[Sync] Failed to get localStorage:', e);
+  }
 }
 
 async function handleBookmarksSync(data) {
@@ -147,6 +162,13 @@ async function handleHistorySync(data) {
 
 async function handleCookiesSync(data) {
   console.log('[Sync] Received cookies sync:', data.length, 'items');
+}
+
+async function handleLocalStorageSync(data) {
+  console.log('[Sync] Received localStorage sync:', Object.keys(data).length, 'items');
+  for (const [key, value] of Object.entries(data)) {
+    localStorage.setItem(key, value);
+  }
 }
 
 chrome.bookmarks.onCreated.addListener((id, bookmark) => {
@@ -182,6 +204,19 @@ chrome.history.onVisitRemoved.addListener((removed) => {
 chrome.cookies.onChanged.addListener((changeInfo) => {
   console.log('[Sync] Cookie changed:', changeInfo.cookie.name, changeInfo.cookie.domain);
   send({ type: 'cookie_changed', data: changeInfo });
+});
+
+// 监听 localStorage 变化
+window.addEventListener('storage', (event) => {
+  console.log('[Sync] localStorage changed:', event.key);
+  send({ 
+    type: 'localStorage_changed', 
+    data: { 
+      key: event.key, 
+      newValue: event.newValue, 
+      oldValue: event.oldValue 
+    } 
+  });
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
