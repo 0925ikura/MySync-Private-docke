@@ -26,9 +26,29 @@ get_server_ip() {
 
 SERVER_IP=$(get_server_ip)
 
-# 随机生成端口（10000-20000 范围）
+# 随机生成端口（10000-20000 范围，避开常用端口）
 generate_random_port() {
-    echo $((RANDOM % 10000 + 10000))
+    # 常用端口列表
+    local common_ports="22 80 443 3306 5432 27017 6379 8080 8443 3000 4000 5000 6000 7000 8000 9000"
+    
+    while true; do
+        local port=$((RANDOM % 10000 + 10000))
+        
+        # 检查端口是否在常用端口列表中
+        local is_common=false
+        for common_port in $common_ports; do
+            if [ "$port" -eq "$common_port" ]; then
+                is_common=true
+                break
+            fi
+        done
+        
+        # 如果不是常用端口，返回它
+        if [ "$is_common" = false ]; then
+            echo "$port"
+            return
+        fi
+    done
 }
 
 # 检测 docker compose 命令
