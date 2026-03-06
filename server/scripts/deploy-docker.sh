@@ -8,18 +8,23 @@ set -e
 COMPOSE_FILE="docker-compose.yml"
 DOMAIN="${DOMAIN:-localhost}"
 
-# 获取服务器 IP 地址
+# 获取服务器公网 IP 地址
 get_server_ip() {
     local ip=""
-    # 尝试多种方式获取 IP
-    if command -v ip &> /dev/null; then
+    # 优先使用外部 API 获取公网 IP
+    ip=$(curl -s https://api.ipify.org 2>/dev/null || echo "")
+    if [ -z "$ip" ]; then
+        ip=$(curl -s https://ifconfig.me 2>/dev/null || echo "")
+    fi
+    if [ -z "$ip" ]; then
+        ip=$(curl -s https://icanhazip.com 2>/dev/null || echo "")
+    fi
+    # 如果都没有，获取内部 IP 作为备选
+    if [ -z "$ip" ] && command -v ip &> /dev/null; then
         ip=$(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K[^ ]+' | head -1)
     fi
     if [ -z "$ip" ]; then
         ip=$(hostname -I 2>/dev/null | awk '{print $1}')
-    fi
-    if [ -z "$ip" ]; then
-        ip=$(curl -s https://api.ipify.org 2>/dev/null || echo "")
     fi
     echo "$ip"
 }
