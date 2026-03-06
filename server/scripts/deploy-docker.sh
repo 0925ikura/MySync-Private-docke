@@ -8,6 +8,24 @@ set -e
 COMPOSE_FILE="docker-compose.yml"
 DOMAIN="${DOMAIN:-localhost}"
 
+# 获取服务器 IP 地址
+get_server_ip() {
+    local ip=""
+    # 尝试多种方式获取 IP
+    if command -v ip &> /dev/null; then
+        ip=$(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K[^ ]+' | head -1)
+    fi
+    if [ -z "$ip" ]; then
+        ip=$(hostname -I 2>/dev/null | awk '{print $1}')
+    fi
+    if [ -z "$ip" ]; then
+        ip=$(curl -s https://api.ipify.org 2>/dev/null || echo "")
+    fi
+    echo "$ip"
+}
+
+SERVER_IP=$(get_server_ip)
+
 # 随机生成端口（10000-20000 范围）
 generate_random_port() {
     echo $((RANDOM % 10000 + 10000))
@@ -122,17 +140,21 @@ echo "  部署完成！"
 echo "========================================="
 echo ""
 echo "📊 服务信息："
+echo "  服务器 IP：$SERVER_IP"
 echo "  域名：$DOMAIN"
 echo "  HTTP 端口：$PORT"
 echo "  WSS 端口：$WSS_PORT"
 echo ""
 echo "🌐 访问地址："
-if [ "$DOMAIN" != "localhost" ]; then
+if [ -n "$SERVER_IP" ]; then
+    echo "  Web 面板：https://$SERVER_IP:$PORT"
+    echo "  WSS 连接：wss://$SERVER_IP:$WSS_PORT"
+elif [ "$DOMAIN" != "localhost" ]; then
     echo "  Web 面板：https://$DOMAIN:$PORT"
     echo "  WSS 连接：wss://$DOMAIN:$WSS_PORT"
 else
     echo "  Web 面板：https://localhost:$PORT"
-    echo "  WSS 连接：wss://localhost:$WSS_PORT"
+    echo "  WSS 连接：wss://localhost:$PORT"
     echo ""
     echo "⚠️  注意：自签名证书会显示安全警告"
 fi
