@@ -95,7 +95,25 @@ echo "🚀 启动服务..."
 $DOCKER_COMPOSE_CMD up -d
 
 # 等待服务启动
-sleep 3
+echo "⏳ 等待服务启动..."
+sleep 5
+
+# 获取服务信息
+for i in {1..30}; do
+    if curl -k -s "https://localhost:$PORT/api/auth/initial" > /dev/null 2>&1; then
+        break
+    fi
+    sleep 1
+done
+
+# 获取初始账号信息
+echo ""
+echo "🔐 获取登录账号信息..."
+INITIAL_AUTH=$(curl -k -s "https://localhost:$PORT/api/auth/initial" 2>/dev/null || echo '{"hasInitial":false}')
+
+# 解析 JSON 获取账号和密码
+USERNAME=$(echo "$INITIAL_AUTH" | grep -o '"username":"[^"]*"' | cut -d'"' -f4)
+PASSWORD=$(echo "$INITIAL_AUTH" | grep -o '"password":"[^"]*"' | cut -d'"' -f4)
 
 # 检查状态
 echo ""
@@ -118,6 +136,17 @@ else
     echo ""
     echo "⚠️  注意：自签名证书会显示安全警告"
 fi
+
+# 显示账号信息
+if [ -n "$USERNAME" ] && [ -n "$PASSWORD" ]; then
+    echo ""
+    echo "🔑 登录账号："
+    echo "  用户名：$USERNAME"
+    echo "  密码：$PASSWORD"
+    echo ""
+    echo "⚠️  请妥善保存账号和密码！"
+fi
+
 echo ""
 echo "🔧 管理命令："
 echo "  查看状态：$DOCKER_COMPOSE_CMD ps"
