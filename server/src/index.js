@@ -130,6 +130,7 @@ function publicRoute(req, res, next) {
 app.get('/api/status', authMiddleware, (req, res) => {
   res.json({
     status: 'running',
+    port: PORT,
     clients: clients.size,
     data: {
       bookmarks: dataStore.bookmarks.length,

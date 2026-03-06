@@ -192,6 +192,9 @@ async function loadInitialData() {
       document.getElementById('dash-localStorage').textContent = status.data.localStorage;
     }
     document.getElementById('dash-clients').textContent = status.clients;
+    if (status.port) {
+      document.getElementById('server-port').textContent = status.port;
+    }
   } catch (e) {
     console.error('Failed to load status:', e);
   }
