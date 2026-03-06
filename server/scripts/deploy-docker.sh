@@ -136,22 +136,21 @@ $DOCKER_COMPOSE_CMD up -d
 echo "⏳ 等待服务启动..."
 sleep 5
 
-# 获取服务信息
-for i in {1..30}; do
-    if curl -k -s "https://localhost:$PORT/api/auth/initial" > /dev/null 2>&1; then
-        break
-    fi
-    sleep 1
-done
-
-# 获取初始账号信息
+# 获取初始账号信息（从容器内部获取）
 echo ""
 echo "🔐 获取登录账号信息..."
-INITIAL_AUTH=$(curl -k -s "https://localhost:$PORT/api/auth/initial" 2>/dev/null || echo '{"hasInitial":false}')
+sleep 2
 
-# 解析 JSON 获取账号和密码
-USERNAME=$(echo "$INITIAL_AUTH" | grep -o '"username":"[^"]*"' | cut -d'"' -f4)
-PASSWORD=$(echo "$INITIAL_AUTH" | grep -o '"password":"[^"]*"' | cut -d'"' -f4)
+# 从容器日志中提取账号信息
+CONTAINER_LOG=$($DOCKER_COMPOSE_CMD logs 2>/dev/null | grep -A3 "ADMIN USER CREATED" || echo "")
+if [ -n "$CONTAINER_LOG" ]; then
+    USERNAME=$(echo "$CONTAINER_LOG" | grep -oP 'Username: \K[^ ]+' || echo "")
+    PASSWORD=$(echo "$CONTAINER_LOG" | grep -oP 'Password: \K[^ ]+' || echo "")
+else
+    # 尝试从日志中获取
+    USERNAME=""
+    PASSWORD=""
+fi
 
 # 检查状态
 echo ""
