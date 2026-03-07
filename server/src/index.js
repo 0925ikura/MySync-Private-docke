@@ -8,9 +8,20 @@ const auth = require('./auth');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
 
 const PORT = process.env.PORT || 8080;
+const WSS_PORT = process.env.WSS_PORT || PORT;
+
+let wss;
+if (WSS_PORT != PORT) {
+  const wssServer = http.createServer();
+  wss = new WebSocketServer({ server: wssServer });
+  wssServer.listen(WSS_PORT, '0.0.0.0', () => {
+    console.log(`[WebSocket] WebSocket server listening on ws://0.0.0.0:${WSS_PORT}`);
+  });
+} else {
+  wss = new WebSocketServer({ server });
+}
 
 let initialCredentials = null;
 const clients = new Map();
