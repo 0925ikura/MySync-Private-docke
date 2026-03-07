@@ -1,24 +1,51 @@
 const express = require('express');
-const http = require('http');
+const http = require('https');
 const { WebSocketServer } = require('ws');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const auth = require('./auth');
 
 const app = express();
-const server = http.createServer(app);
 
 const PORT = process.env.PORT || 8080;
 const WSS_PORT = process.env.WSS_PORT || PORT;
+const SSL_ENABLED = process.env.SSL_ENABLED === 'true';
+const SSL_CERT_PATH = process.env.SSL_CERT_PATH || '/app/certs/cert.pem';
+const SSL_KEY_PATH = process.env.SSL_KEY_PATH || '/app/certs/key.pem';
 
-let wss;
+let server, wss;
+
+if (SSL_ENABLED && fs.existsSync(SSL_CERT_PATH) && fs.existsSync(SSL_KEY_PATH)) {
+  const httpsOptions = {
+    cert: fs.readFileSync(SSL_CERT_PATH),
+    key: fs.readFileSync(SSL_KEY_PATH)
+  };
+  server = https.createServer(httpsOptions, app);
+} else {
+  server = http.createServer(app);
+}
+
 if (WSS_PORT != PORT) {
-  const wssServer = http.createServer();
-  wss = new WebSocketServer({ server: wssServer });
-  wssServer.listen(WSS_PORT, '0.0.0.0', () => {
-    console.log(`[WebSocket] WebSocket server listening on ws://0.0.0.0:${WSS_PORT}`);
-  });
+  let wssServer;
+  if (SSL_ENABLED && fs.existsSync(SSL_CERT_PATH) && fs.existsSync(SSL_KEY_PATH)) {
+    const httpsOptions = {
+      cert: fs.readFileSync(SSL_CERT_PATH),
+      key: fs.readFileSync(SSL_KEY_PATH)
+    };
+    wssServer = https.createServer(httpsOptions);
+    wss = new WebSocketServer({ server: wssServer });
+    wssServer.listen(WSS_PORT, '0.0.0.0', () => {
+      console.log(`[WebSocket] WebSocket server listening on wss://0.0.0.0:${WSS_PORT}`);
+    });
+  } else {
+    wssServer = http.createServer();
+    wss = new WebSocketServer({ server: wssServer });
+    wssServer.listen(WSS_PORT, '0.0.0.0', () => {
+      console.log(`[WebSocket] WebSocket server listening on ws://0.0.0.0:${WSS_PORT}`);
+    });
+  }
 } else {
   wss = new WebSocketServer({ server });
 }
