@@ -124,6 +124,13 @@ function setupEventListeners() {
     settings.historyLimit = parseInt(document.getElementById('history-limit').value) || 1000;
     settings.cookiesLimit = parseInt(document.getElementById('cookies-limit').value) || 200;
     saveSettings();
+    showNotification('设置已保存，正在重新连接...');
+    setTimeout(() => {
+      chrome.runtime.sendMessage({ type: 'reconnect' });
+      setTimeout(() => {
+        window.close();
+      }, 1000);
+    }, 500);
   });
 }
 
