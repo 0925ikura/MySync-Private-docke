@@ -115,6 +115,16 @@ function setupEventListeners() {
   document.getElementById('reconnect-btn').addEventListener('click', reconnect);
   document.getElementById('sync-all-btn').addEventListener('click', syncAll);
   document.getElementById('clear-data-btn').addEventListener('click', clearData);
+  document.getElementById('save-btn').addEventListener('click', () => {
+    settings.serverUrl = document.getElementById('server-url').value;
+    settings.syncBookmarks = document.getElementById('sync-bookmarks').checked;
+    settings.syncHistory = document.getElementById('sync-history').checked;
+    settings.syncCookies = document.getElementById('sync-cookies').checked;
+    settings.bookmarksLimit = parseInt(document.getElementById('bookmarks-limit').value) || 500;
+    settings.historyLimit = parseInt(document.getElementById('history-limit').value) || 1000;
+    settings.cookiesLimit = parseInt(document.getElementById('cookies-limit').value) || 200;
+    saveSettings();
+  });
 }
 
 function saveSettings() {
